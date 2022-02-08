@@ -442,7 +442,7 @@ def add_user(message):
                                'join_time': join_time, 
                                'username': username, 
                                'canPredict': True,
-                               'nextPrediction': now, #Using this to get rid of can't comaper offset-naive and offset-aware datetimes 
+                               'nextPrediction': now.strftime('%D %T'), #Using this to get rid of can't comaper offset-naive and offset-aware datetimes 
                                #It removes the microseconds aspect and even the time zone info, comes finally as 2022-02-07 02:14:30+00:00
                                'isSuper': False,
                                'isAdmin': False,
@@ -1337,7 +1337,7 @@ def get_stock(message):
                                 'join_time': join_time,  
                                 'username': username,
                                 'canPredict': True,
-                                'nextPrediction': datetime.now().strftime('%D %T'), 
+                                'nextPrediction': datetime.now(IST).strftime('%D %T'), 
                                 'isSuper': False,
                                 'isAdmin': False,
                                 'isBlocked': False,
@@ -1843,9 +1843,9 @@ def making_prediction(message):
   cool_down = 300
   userId = message.from_user.id
   user = mycol.find_one({'id': userId})
-  if(user['info']['isSuper']): cool_down = 0
+  if(user['info']['isSuper']): cool_down = 300
   
-  now = datetime.now()
+  now = datetime.now(IST)
 
   current_time = now.strftime('%D %T')
   current_time = datetime.strptime(current_time,'%d/%m/%y %H:%M:%S')
@@ -1863,12 +1863,14 @@ def making_prediction(message):
     wait_for = predict_time-current_time
     can_user_predict = False
   
-
-  
   mycol.update_one({'id': userId}, {'$set': {'info.canPredict': can_user_predict}})
   mycol.update_many({'info.isSuper': True}, {'$set': {'info.canPredict': True}})
 
-  if(can_user_predict):  
+  # print(can_user_predict)
+  # print(current_time)
+  # print(predict_time)
+  user = mycol.find_one({'id': userId})
+  if(user['info']['canPredict']):  
     sendResponse(message, 'Hold tight. Predicting...')
 
     ticks = message.text.split() 

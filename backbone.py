@@ -1,15 +1,14 @@
-from tkinter.tix import CheckList
+# from tkinter.tix import CheckList
+#The above line was magically added, no clue why
 import yfinance as yf
 import pandas as pd
 import plotly.express as px
-from sklearn.linear_model import LinearRegression, ridge_regression
+from sklearn.linear_model import ridge_regression
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 from sklearn.linear_model import Ridge
 from sklearn.metrics import accuracy_score
 import numpy as np
-import time
-import os 
 import seaborn as sns
 import matplotlib.pyplot as plt
 import io
