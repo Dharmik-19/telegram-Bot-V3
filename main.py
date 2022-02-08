@@ -214,6 +214,7 @@ def candlestick(data, tick, first, last, message):
   fig = go.Figure(data=[go.Candlestick(x=data[data.columns[0]], open=data['Open'], high=data['High'], low=data['Low'], close=data['Close'])])
         
   fig.update_layout(
+      xaxis_rangeslider_visible=False,
       title="Candlestick chart for ${} from {} to {}".format(tick.upper(), first, last),
       yaxis_title="Price",
       xaxis_title="Timeframe",
@@ -228,7 +229,7 @@ def candlestick(data, tick, first, last, message):
 
   img_bug = io.BytesIO()
   fig.write_image(img_bug, format='png')
-  bot.send_photo(message.chat.id, Image.open(img_bug), "Candlestick chart for <b>{}</b> from <i>{}</i> to <i>{}</i>".format(tick.upper(), first, last), 'html')
+  bot.send_photo(message.chat.id, Image.open(img_bug), "Candlestick chart for $<b>{}</b> from <i>{}</i> to <i>{}</i>".format(tick.upper(), first, last), 'html')
   img_bug.close()
 
 
@@ -3216,7 +3217,7 @@ def send_help(message):
   response = '<b><u>PRICE COMMANDS</u></b>\n\n'
   
   response+='1) <b>/predict</b> {ticker} {-output(optional)}\n\n'
-  response+='-Predicts the closing price of the ticker used. Use the output parameter to get output\n'
+  response+='-Predicts the closing price of and ticker (once very five minutes). Use the output parameter to get output\n'
   response+='<u>Eg</u>: /predict BABA -output\nPricts the price for Alibaba Group Holding Limited and provides output.\n\n'
 
   response+='2) <b>/price</b> {tickers} {date1} {date2}\n\n'
@@ -3359,40 +3360,40 @@ def send_helpadmin(message):
 
 
 
-# @bot.message_handler(commands=['helpsuper', 'Helpsuper'])
-# @super_access()
-# def send_helpsuper(message):
-#   response = '<b><u>SUPERUSER COMMANDS</u></b>\n\n\n'
+@bot.message_handler(commands=['helpsuper', 'Helpsuper'])
+@super_access()
+def send_helpsuper(message):
+  response = '<b><u>SUPERUSER COMMANDS</u></b>\n\n\n'
   
-#   response+='1) <b>/makeadmin</b> {IDs}\n'
-#   response+='Provide admin access to usernames\n\n'
+  response+='1) <b>/makeadmin</b> {IDs}\n'
+  response+='Provide admin access to usernames\n\n'
   
-#   response+='2) <b>/removeadmin</b> {IDs}\n'
-#   response+='Revoke admin access from usernames\n\n'
+  response+='2) <b>/removeadmin</b> {IDs}\n'
+  response+='Revoke admin access from usernames\n\n'
 
-#   response+='3) <b>/userwatchlist</b> {IDs}\n'
-#   response+='Shows watchlist of usernames\n\n'
+  response+='3) <b>/userwatchlist</b> {IDs}\n'
+  response+='Shows watchlist of usernames\n\n'
 
-#   response+='4) <b>/usercommands</b> {IDs} {integer/all}\n'
-#   response+='Shows latest commands ran by users. Ifnumber is given at last, then it cuts down results to that number\n\n'
+  response+='4) <b>/usercommands</b> {IDs} {integer/all}\n'
+  response+='Shows latest commands ran by users. Ifnumber is given at last, then it cuts down results to that number\n\n'
 
-#   response+='5) <b>/clearcommands</b> {IDs}\n'
-#   response+='Clear the commands ran by usernames\n\n'
+  response+='5) <b>/clearcommands</b> {IDs}\n'
+  response+='Clear the commands ran by usernames\n\n'
     
-#   response+='6) <b>/showadmins</b>\n'
-#   response+='Shows the Usernname, names with their sign up dates of admins\n\n'
+  response+='6) <b>/showadmins</b>\n'
+  response+='Shows the Usernname, names with their sign up dates of admins\n\n'
   
-#   response+='7) <b>/blacklist</b> {IDs}\n'
-#   response+='Blacklists the usernames and restricts access to the bot at all\n\n'
+  response+='7) <b>/blacklist</b> {IDs}\n'
+  response+='Blacklists the usernames and restricts access to the bot at all\n\n'
 
-#   response+='8) <b>/whitlist</b> {IDs}\n'
-#   response+='Whitelists the usernames and provides access to the bot\n\n'
+  response+='8) <b>/whitlist</b> {IDs}\n'
+  response+='Whitelists the usernames and provides access to the bot\n\n'
 
-#   response+='9) <b>/becomeadmin</b>\n'
-#   response+='Downgrade your access to admin level\n\n'
+  response+='9) <b>/becomeadmin</b>\n'
+  response+='Downgrade your access to admin level\n\n'
   
   
-#   bot.send_message(message.chat.id, response, parse_mode='html')
+  bot.send_message(message.chat.id, response, parse_mode='html')
 
 
 
