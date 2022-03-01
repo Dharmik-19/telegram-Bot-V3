@@ -1313,11 +1313,11 @@ def get_stock(message):
         dateTime = message.date
         id = message.from_user.id
 
-        reply+='Congratulations, <i>{}</i>, you are now an authenticated user!\nI am RickyRetardo69 at your disposal. Use /start to fire me up and /help to get a walkthrough of commands'.format(first_name+' '+last_name)  
+        reply+='Congratulations, <i>{}</i>, you are now an authenticated user!\nI am Porcellian at your disposal. Use /start to fire me up and /help to get a walkthrough of commands'.format(first_name+' '+last_name)  
         sendResponse(message, reply)
 
-        img = open('./photos/macd-wsb.jpg', 'rb')
-        bot.send_photo(message.chat.id, img, None)
+        #img = open('./photos/macd-wsb.jpg', 'rb')
+        #bot.send_photo(message.chat.id, img, None)
 
         
         print("NEW USER: "+ first_name+' '+last_name) 
@@ -1449,32 +1449,9 @@ def greeting(message):
 
   if(ln==None): ln = ""
   name = fn+' '+ln
-  
-  num = random.randint(1,7)
-
-  if(num==1):
-    img = open('./photos/wsb-yatch.png', 'rb')
-  elif(num==2):
-    img = open('./photos/wsb-casino.jpg', 'rb')
-  elif(num==3):
-    img = open('./photos/dfv.jpg', 'rb')
-  elif(num==4):
-    img = open('./photos/crash.jpg', 'rb')
-  elif(num==5):
-    img = open('./photos/loss.jpg', 'rb')
-  elif(num==6):
-    img = open('./photos/gme.jpg', 'rb')
-  else: 
-    img = open('./photos/bubble-wsb.jpg', 'rb')
-
-  bot.send_photo(message.chat.id, img, None)
 
   user_info = mycol.find_one({'id': message.from_user.id})
-  bot.reply_to(message, "Hope you had a green day at the casino.\nI am <b>Ultra bullish</b> on $NVDA at the moment, not because I bought it above $300.\nWarrenPuffett tells me Nvidia makes the best chips...\nPotato, barbecue, salt&vinegar, honey, mustard... whatever type of chip you want, Nvidia's got it.\nTotal API calls you made: <b>{}</b>".format(user_info['info']['count']['calls_total']), parse_mode="html")
-  
-  #img = open('./macd-wsb.jpg', 'rb')
-  #bot.send_photo(message.chat.id, img, None, 'Text')
-
+  bot.reply_to(message, "Greetings! Please use the /help command for a walkthrough of commands. \nTotal API calls you made: <b>{}</b>".format(user_info['info']['count']['calls_total']), parse_mode="html")
 
 
 
@@ -1485,7 +1462,7 @@ def get_banner(message):
   calls_memes(message)
 
 
-  num = random.randint(1,9)
+  num = random.randint(1,16)
     
   if(num==1):
     path = './banners/current-wsb-overlay.jpg'
@@ -1505,7 +1482,18 @@ def get_banner(message):
     path = './banners/wsb-yatch.png'
   elif(num==9):
     path = './banners/yatch-wsb-overlay.png'
-    
+  elif(num==10):
+    path = './photos/dfv.jpg'
+  elif(num==11):
+    path = './photos/crash.jpg'
+  elif(num==12):
+    path = './photos/loss.jpg'
+  elif(num==13):
+    path = './photos/gme.jpg'
+  elif(num==14): 
+    path = './photos/bubble-wsb.jpg'
+  else:
+    path = './photos/macd-wsb.jpg'
 
   img = open(path, 'rb')
   bot.send_photo(message.chat.id, img, None)
@@ -1843,28 +1831,35 @@ def making_prediction(message):
   cool_down = 300
   userId = message.from_user.id
   user = mycol.find_one({'id': userId})
-  if(user['info']['isSuper']): cool_down = 300
+  if(user['info']['isAdmin']): cool_down = 0
   
   now = datetime.now(IST)
 
-  current_time = now.strftime('%D %T')
+  current_time = now.strftime('%d/%m/%y %H:%M:%S')
   current_time = datetime.strptime(current_time,'%d/%m/%y %H:%M:%S')
   #We are gatting current time in ISt and then converting into string and back into date time
   
   predict_time = user['info']['nextPrediction']
   predict_time = datetime.strptime(predict_time,'%d/%m/%y %H:%M:%S')
+
+  #The following print commands were for debugging thwe issue #1
+  # print(current_time.strftime('%d/%m/%y %H:%M:%S'))
+  # print(predict_time.strftime('%d/%m/%y %H:%M:%S'))
+  # print(current_time, predict_time)
+  # print(current_time - predict_time)
   #In database predict_time is stored as string and here we convert it into a datatime object
 
   if(current_time>predict_time):
-    time_dilation = current_time-predict_time
+    #time_dilation = current_time-predict_time
     can_user_predict = True
   
   else:
     wait_for = predict_time-current_time
+    print(wait_for)
     can_user_predict = False
   
   mycol.update_one({'id': userId}, {'$set': {'info.canPredict': can_user_predict}})
-  mycol.update_many({'info.isSuper': True}, {'$set': {'info.canPredict': True}})
+  #mycol.update_many({'info.isSuper': True}, {'$set': {'info.canPredict': True}})
 
   # print(can_user_predict)
   # print(current_time)
@@ -1894,7 +1889,7 @@ def making_prediction(message):
     calls_price(message)
 
     #Restricting for the next 300 seconds
-    mycol.update_one({'id': userId}, {'$set': {'info.nextPrediction': (datetime.now()+timedelta(seconds = cool_down)).strftime('%D %T')}})
+    mycol.update_one({'id': userId}, {'$set': {'info.nextPrediction': (datetime.now()+timedelta(seconds = cool_down)).strftime('%d/%m/%y %H:%M:%S')}})
     mycol.update_one({'id': userId}, {'$set': {'info.canPredict': False}})
 
 
@@ -3307,12 +3302,12 @@ def send_help(message):
   response+='1. Get price quotation for Indices, Forex, ETFs, Mutual Funds, Cryptocurrency, Stocks, Commodity Futures, US Treasury bond rates\n'
   response+='2. Adding tickers takes time - because it undergoes authentication\n'
   response+='3. Let me know if there are any bugs <a href="https://tally.so/r/mBgk43">here</a>\n'
-  response+='5. Treshold on API calls is not tested, if the limit is excedded, RickyRetardo69 will hand in resignation\n'
+  response+='5. Treshold on API calls is not tested, if the limit is excedded, Porcellian will hand in resignation\n'
   response+='4. I follow IST (UTC +5:30) time zone\n'
   response+='6. Finance commands have higher time complexity \n'
   response+='7. Predicting prices for tickers may take >30 seconds \n'
   response+='-----------------------------------\n\n'
-  response+='BUY HIGH, SELL LOW!\n©  RickyRetardo69'
+  response+='BUY HIGH, SELL LOW!\n©  Porcellian'
   bot.send_message(message.chat.id, response, parse_mode='html')
 
  
